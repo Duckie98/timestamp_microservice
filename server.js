@@ -1,22 +1,52 @@
-// server.js
-// where your node app starts
+// Basic required import for Nodejs
+var express = require("express");
+var bodyParser = require("body-parser");
+var cors = require("cors");
+var ejs = require("ejs");
 
-// init project
-const express = require('express');
-const app = express();
+// Create an instance of exxpress for our app
+var app = (module.exports = express());
+app.use(bodyParser.json());
+app.use(cors());
+app.set("views", "./views");
+app.use(express.static(__dirname + "/public"));
+app.set("view engine", "ejs");
 
-// we've started you off with Express, 
-// but feel free to use whatever libs or frameworks you'd like through `package.json`.
-
-// http://expressjs.com/en/starter/static-files.html
-app.use(express.static('public'));
-
-// http://expressjs.com/en/starter/basic-routing.html
-app.get('/', function(request, response) {
-  response.sendFile(__dirname + '/views/index.html');
+app.get("/", (req, res, next) => {
+  res.render("index", { user: [1, 2, 3, 4] });
 });
 
-// listen for requests :)
-const listener = app.listen(process.env.PORT, function() {
-  console.log('Your app is listening on port ' + listener.address().port);
+app.get("/api/timestamp/:dateVal", (req, res, next) => {
+  // get the dateVal from the path
+  let dateVal = req.params.dateVal;
+
+  // Check the dateVal is a number or string
+  if (isNaN(dateVal)) {
+    // Check if the dateVal string is valid or not
+    let valid = new Date(dateVal).getTime();
+
+    if (valid > 0) {
+      let utcDate = new Date(dateVal);
+      res.json({
+        unix: valid,
+        utc: utcDate.toUTCString()
+      });
+    } else {
+      res.json({
+        error: "Invalid Date"
+      });
+    }
+  } else {
+    let unixDate = dateVal;
+    let utcDate = new Date(dateVal * 1000);
+
+    res.json({
+      unix: unixDate,
+      utc: utcDate.toUTCString()
+    });
+  }
+});
+
+app.listen(process.env.PORT || 5000, () => {
+  console.log("Server Working");
 });
