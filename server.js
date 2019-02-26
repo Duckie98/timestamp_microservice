@@ -9,7 +9,7 @@ var app = (module.exports = express());
 app.use(bodyParser.json());
 app.use(cors());
 app.set("views", "./views");
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + "/views"));
 app.set("view engine", "ejs");
 
 app.get("/", (req, res, next) => {
@@ -47,6 +47,6 @@ app.get("/api/timestamp/:dateVal", (req, res, next) => {
   }
 });
 
-app.listen(process.env.PORT || 5000, () => {
+app.listen(process.env.PORT, () => {
   console.log("Server Working");
 });
